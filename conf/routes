@@ -7,5 +7,6 @@ GET     /                           @controllers.Application.index
 GET     /business/all               controllers.BusinessController.all
 GET     /business/city              controllers.BusinessController.city
 GET     /business/inspections       controllers.BusinessController.inspection
+GET     /business/violations        controllers.BusinessController.violations
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               @controllers.Assets.at(path="/public", file)

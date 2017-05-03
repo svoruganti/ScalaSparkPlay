@@ -3,8 +3,8 @@ package Impl
 import javax.inject.Inject
 
 import Model.{Business, Inspection, Violation}
+import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.{DataFrame, Dataset}
 import traits.{AppSparkSession, BusinessService}
 
 class BusinessServiceImpl @Inject() (appSparkSession: AppSparkSession) extends BusinessService{
@@ -37,11 +37,14 @@ class BusinessServiceImpl @Inject() (appSparkSession: AppSparkSession) extends B
         .map(x => (x._1.name, x._2.iType)).groupByKey(_._1).mapGroups((x, y) => (x, y.length))
   }
 
-//  override def getViolationsCountByBusinessGroupedRiskType: Dataset[(String, String, Long)] = {
-//    val violationsByBusiness = violationDataset.groupBy('business_id, 'risk_category).
-//  }
+  override def getViolationsCountByBusinessGroupedRiskType: Dataset[(String, String, Long)] = {
+    val violationsByBusiness = violationDataset.groupByKey(x => (x.business_id, x.risk_category)).mapGroups((x, y) => (x._1, x._2, y.length.toLong));
+    return violationsByBusiness;
+  }
 
   val businessStructure = StructType(Array(StructField("business_id", StringType, true), StructField("name", StringType, true), StructField("address", StringType, true), StructField("city", StringType, true)))
   val inspectionStructure = StructType(Array(StructField("business_id", StringType, true), StructField("score", StringType, true), StructField("date", StringType, true), StructField("iType", StringType, true)))
   val violationStructure = StructType(Array(StructField("business_id", StringType, true), StructField("date", StringType, true), StructField("violationTyeId", StringType, true), StructField("risk_category", StringType, true), StructField("description", StringType, true)))
 }
+
+case class ViolationBusinessRiskType(business_id:String, risk_type:String)

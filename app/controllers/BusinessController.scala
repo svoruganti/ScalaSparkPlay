@@ -26,6 +26,11 @@ class BusinessController @Inject()(businessService: BusinessService) extends Con
     Ok(Json.toJson(inspections))
   }
 
+  def violations = Action {
+    val violations = businessService.getViolationsCountByBusinessGroupedRiskType.collect();
+    Ok(Json.toJson(violations))
+  }
+
   implicit val writeBusiness : Writes[Business] = (
     (JsPath \ "business_id").write[String] and
     (JsPath \ "name").write[String] and
@@ -35,5 +40,9 @@ class BusinessController @Inject()(businessService: BusinessService) extends Con
 
   implicit def tuple2Writes[A, B](implicit a: Writes[A], b: Writes[B]): Writes[(A, B)] = new Writes[(A, B)] {
     def writes(tuple: (A, B)) = JsArray(Array(a.writes(tuple._1), b.writes(tuple._2)))
+  }
+
+  implicit def tuple3Writes[A, B, C](implicit a: Writes[A], b: Writes[B], c: Writes[C]): Writes[(A, B, C)] = new Writes[(A, B, C)] {
+    def writes(tuple: (A, B, C)) = JsArray(Array(a.writes(tuple._1), b.writes(tuple._2), c.writes(tuple._3)))
   }
 }

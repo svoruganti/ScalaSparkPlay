@@ -24,4 +24,10 @@ class BusinessServiceTests extends FunSuite{
     dataSet.show()
     assert(dataSet.count() > 0)
   }
+
+  test("Get violations count by business, risk category"){
+    val dataSet = businessService.getViolationsCountByBusinessGroupedRiskType
+    dataSet.show()
+    assert(dataSet.count() > 0)
+  }
 }
